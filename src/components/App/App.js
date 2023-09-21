@@ -3,7 +3,7 @@ import OptionsPanel from "../components/OptionsPanel";
 import Board from "../components/Board";
 
 import "./App.css";
-import { createTiles } from "../../misc/utils";
+import { createTiles, indexOfSelected } from "../../misc/utils";
 
 class App extends Component {
   constructor(props) {
@@ -37,7 +37,46 @@ class App extends Component {
   }
 
   handleTileClicked(id, color) {
-    // TODO: Implement the handleTileClicked() method
+    this.setState((state) => {
+      const tiles = state.tiles;
+      const toBeCleared = tiles[id];
+      const selectedTileIndex = indexOfSelected(tiles, id, color);
+      const previousTileIndex = state.previousTileIndex;
+
+      // If there are tiles to be cleared, clear them.
+      if (toBeCleared !== null) {
+        tiles[toBeCleared[0]].selected = false;
+        tiles[toBeCleared[1]].selected = false;
+        toBeCleared = null;
+      }
+
+      // If there is a previous tile index, check if it matches the current tile.
+      if (previousTileIndex !== null) {
+        const previousTile = tiles[previousTileIndex];
+        const selectedTile = tiles[selectedTileIndex];
+
+        if (
+          previousTile.id !== selectedTile.id &&
+          previousTile.color === color
+        ) {
+          selectedTile.matched = true;
+          previousTile.matched = true;
+          previousTileIndex = null;
+        } else {
+          toBeCleared = [previousTileIndex, selectedTileIndex];
+          previousTileIndex = null;
+        }
+      }
+
+      // Set the selected property of the current tile to true.
+      tiles[selectedTileIndex].selected = true;
+
+      return {
+        toBeCleared,
+        tiles,
+        previousTileIndex,
+      };
+    });
   }
 
   startGame(numTiles) {
@@ -45,7 +84,7 @@ class App extends Component {
       playing: true,
       previousTileIndex: null,
       toBeCleared: null,
-      tiles: createTiles(numTiles),
+      tiles: createTiles(numTiles, this.handleTileClicked), // Pass this.handleTileClicked as an argument
     }));
   }
 }
