@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import GameContext from "../../GameContext.js";
 import OptionsPanel from "../components/OptionsPanel";
 import Board from "../components/Board";
 
@@ -19,19 +20,22 @@ class App extends Component {
   }
 
   render() {
+    // Wrap the <OptionsPanel/> and <Board /> components in an instantiation of the <GameContext.Provider /> component, adding a prop called value to the <GameContext.Provider > whose value should be the whole state object
     return (
       <div className="App">
         <header className="App-header">Turbo-Matcher</header>
-        <OptionsPanel
-          playing={this.state.playing}
-          numTiles={this.state.numTiles}
-          startGame={this.startGame}
-        />
-        <Board
-          numTiles={this.state.numTiles}
-          tiles={this.state.tiles}
-          handleTileClicked={this.handleTileClicked}
-        />
+        <GameContext.Provider value={this.state}>
+          <OptionsPanel
+            playing={this.state.playing}
+            numTiles={this.state.numTiles}
+            startGame={this.startGame}
+          />
+          <Board
+            numTiles={this.state.numTiles}
+            tiles={this.state.tiles}
+            handleTileClicked={this.handleTileClicked}
+          />
+        </GameContext.Provider>
       </div>
     );
   }
