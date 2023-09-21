@@ -87,6 +87,15 @@ class App extends Component {
       tiles: createTiles(numTiles, this.handleTileClicked), // Pass this.handleTileClicked as an argument
     }));
   }
+
+  // Add a new method called handleNumTileChange()
+  handleNumTileChange(num) {
+    this.setState(() => ({
+      numTiles: num,
+      playing: false,
+      tiles: [],
+    }));
+  }
 }
 
 export default App;
